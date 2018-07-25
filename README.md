@@ -10,6 +10,8 @@ https://www.elastic.co/guide/en/kibana/current/tutorial-load-dataset.html
 https://www.elastic.co/assets/blt395810ab50bd150b/6.3_es_commands.txt
 http://elasticsearch-cheatsheet.jolicode.com
 
+https://www.elastic.co/guide/en/elasticsearch/guide/current/lowercase-token-filter.html
+
 General knowledge 
 1 search flow 
 2 inverted index 

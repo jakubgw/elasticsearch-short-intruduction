@@ -14,13 +14,10 @@ const insert = (indexName) => {
         }
     };
 
-    request(options)
+    return request(options)
         .then(() => {
             console.log(`Index created ${indexName}`);
-        })
-        .catch((err) => {
-            console.log(err.message || err);
-        });
+        })      
 }
 
 const createMappings = (indexName) => {
@@ -42,19 +39,21 @@ const createMappings = (indexName) => {
         }
     };
     
-    request(options)
+    return request(options)
         .then(() => {
             console.log(`Mappings created ${indexName}`);
         })
-        .catch((err) => {
-            console.log(err.message || err);
-        });
+      
 }
 
 const indexName = process.argv[2];
 
-createMappings(indexName);
-insert(indexName);
+createMappings(indexName)
+    .then(() => insert(indexName))
+    . catch((err) => {
+        console.log(err.message || err);
+    });
+;
 
 
 
