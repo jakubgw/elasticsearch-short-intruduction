@@ -1,0 +1,945 @@
+{
+	"variables": [],
+	"info": {
+		"name": "elastic-search-introduction",
+		"_postman_id": "538dfc90-f85f-2e8b-26f9-de32b5212a4c",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GeoQueries",
+			"description": "",
+			"item": [
+				{
+					"name": "GeoShape",
+					"description": "",
+					"item": [
+						{
+							"name": "create shape mappings",
+							"request": {
+								"url": "localhost:9200/shape-example",
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"mappings\": {\r\n        \"_doc\": {\r\n            \"properties\": {\r\n                \"location\": {\r\n                    \"type\": \"geo_shape\"\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "create doc",
+							"request": {
+								"url": "localhost:9200/shape-example/_doc",
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Wind & Wetter, Berlin, Germany\",\r\n    \"location\": {\r\n        \"type\": \"point\",\r\n        \"coordinates\": [13.400544, 52.530286]\r\n    }\r\n}"
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "envelop query",
+							"request": {
+								"url": "localhost:9200/shape-example/_search",
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"query\":{\r\n        \"bool\": {\r\n            \"must\": {\r\n                \"match_all\": {}\r\n            },\r\n            \"filter\": {\r\n                \"geo_shape\": {\r\n                    \"location\": {\r\n                        \"shape\": {\r\n                            \"type\": \"envelope\",\r\n                            \"coordinates\" : [[13.0, 53.0], [14.0, 52.0]]\r\n                        },\r\n                        \"relation\": \"within\"\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+								},
+								"description": ""
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"request": {
+								"url": "localhost:9200/shape-example/_search",
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": ""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Wind & Wetter, Berlin, Germany\",\r\n    \"location\": {\r\n        \"type\": \"point\",\r\n        \"coordinates\": [13.400544, 52.530286]\r\n    }\r\n}"
+								},
+								"description": ""
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "search by bounding box ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/logs/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"query\": {\r\n    \"geo_bounding_box\": { \r\n      \"geo.coordinates\": {\r\n        \"top_left\": {\r\n          \"lat\": 42,\r\n          \"lon\": -72\r\n        },\r\n        \"bottom_right\": {\r\n          \"lat\": 40,\r\n          \"lon\": -74\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "search by polygon",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/logs/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"query\": {\r\n        \"bool\" : {\r\n            \"must\" : {\r\n                \"match_all\" : {}\r\n            },\r\n            \"filter\" : {\r\n                \"geo_polygon\" : {\r\n                    \"geo.coordinates\" : {\r\n                        \"points\" : [\r\n                        {\"lat\" : 40, \"lon\" : -70},\r\n                        {\"lat\" : 45, \"lon\" : -80},\r\n                        {\"lat\" : 30, \"lon\" : -90}\r\n                        ]\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "search by distance ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/logs/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"query\": {\r\n        \"bool\" : {\r\n            \"must\" : {\r\n                \"match_all\" : {}\r\n            },\r\n            \"filter\" : {\r\n                \"geo_distance\" : {\r\n                    \"distance\" : \"200km\",\r\n                    \"geo.coordinates\" : {\r\n                        \"lat\" : 40,\r\n                        \"lon\" : -70\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test CRUD",
+			"description": "",
+			"item": [
+				{
+					"name": "create test index with analisis and mapping",
+					"request": {
+						"url": "localhost:9200/test",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"settings\": {\r\n    \"number_of_shards\" : 3,\r\n    \"number_of_replicas\" : 2,\r\n    \"analysis\": {\r\n      \"analyzer\": {\r\n        \"english_analyzer\": {\r\n          \"type\": \"standard\",\r\n          \"max_token_length\": 5,\r\n          \"stopwords\": \"_english_\"\r\n        }\r\n      }\r\n    }\r\n  },\r\n   \"mappings\" : {\r\n        \"type\" : {\r\n            \"properties\" : {\r\n                \"textField\" : { \r\n                \t\"type\" : \"text\",\r\n            \t\t\"analyzer\": \"english_analyzer\"\r\n            \t}\r\n            }\r\n        }\r\n   }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "english analizer ",
+					"request": {
+						"url": "localhost:9200/test/_analyze",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"analyzer\": \"english_analyzer\",\r\n  \"text\": \"The 2 QUICK Brown-Foxes jumped over the lazy dog's bone.\"\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "create with auto id",
+					"request": {
+						"url": "localhost:9200/test/type",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"textField\" : \"This is text field\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete index ",
+					"request": {
+						"url": "localhost:9200/test",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "create with id",
+					"request": {
+						"url": "localhost:9200/test/type/myID",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"textField\" : \"This is ducment with id myID\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "To 10 results ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/test/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"test",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get by ID ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/test/_search?q=_id:myID",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"test",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "_id:myID",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "update one field",
+					"request": {
+						"url": "localhost:9200/test/type/1234/_update",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"doc\" : {\n\t\t\"textField\" : \"This is text field 33\"\n\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "search in all fields ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/test/_search?q=text",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"test",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "text",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Search complex query ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/test/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"test",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"query\": {\r\n\t\t\"bool\": {\r\n\t\t\t\"must\": [{\r\n\t\t\t\t\t\"term\": {\r\n\t\t\t\t\t\t\"textField\": \"text\"\r\n\t\t\t\t\t}\r\n\t\t\t\t}, {\r\n\t\t\t\t\t\"range\": {\r\n\t\t\t\t\t\t\"age\": {\r\n\t\t\t\t\t\t\t\"gte\": 10,\r\n\t\t\t\t\t\t\t\"lte\": 20\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t],\r\n\t\t\t\"must_not\": [\r\n\t\t        {\r\n\t\t          \"term\": {\r\n\t\t            \"age\": \"13\"\r\n\t\t          }\r\n\t\t        }\r\n\t        ], \r\n\t\t\t\"filter\": [{\r\n\t\t\t\t\"term\": {\r\n\t\t\t\t\t\"_type\": \"type\"\r\n\t\t\t\t}\r\n\t\t\t}]\r\n\t\t}\r\n\r\n\t}\r\n\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "simple search with query and order",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"query\": {\r\n    \"match\": {\r\n      \"text_entry\": \"to be or not to be\"\r\n    }\r\n  },\r\n  \"sort\": [\r\n    {\r\n      \"_id\": {\r\n        \"order\": \"desc\"\r\n      }\r\n    }\r\n  ]\r\n  \r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cluster Info",
+			"description": "",
+			"item": [
+				{
+					"name": "Get Cluster Info",
+					"request": {
+						"url": "localhost:9200",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Indexes",
+					"request": {
+						"url": "http://localhost:9200/_settings",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Mappings",
+					"request": {
+						"url": "localhost:9200/shakespeare/_mappings",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Indices Info",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/_cat/indices?v",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"indices"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": "",
+									"equals": false,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FullTextSearch",
+			"description": "",
+			"item": [
+				{
+					"name": "simple search with query ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"query\": {\r\n    \"match\": {\r\n      \"text_entry\": \"to be or not to be\"\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "simple search with query - explain",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?explain=true",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "explain",
+									"value": "true\n",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"query\": {\r\n    \"match\": {\r\n      \"text_entry\": \"to be or not to be\"\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "search with filters ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n  \"query\": { \r\n    \"bool\": { \r\n      \"must\": [\r\n        {\r\n\t      \"match\": {\r\n\t    \t\"text_entry\": \"to be or not to be\"\r\n\t      }\r\n\t    }\r\n      ],\r\n      \"filter\": [ \r\n        { \"term\":  { \"play_name\": \"Hamlet\" }},\r\n        { \"term\":  { \"speaker\": \"HAMLET\" }}\r\n      ]\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Boosting",
+			"description": "",
+			"item": [
+				{
+					"name": "boosting",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"query\": {\r\n\t\t\"bool\": {\r\n\t\t\t\"should\": [{\r\n\t\t\t\t\"match\": {\r\n\t\t\t\t\t\"text_entry\": {\r\n\t\t\t\t\t\t\"query\": \"To be, or not to be: that is the question:\"\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"match\": {\r\n\t\t\t\t\t\"text_entry\": {\r\n\t\t\t\t\t\t\"query\": \"But that is not the question\"\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\t]\r\n\t\t}\r\n\t}\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Aggregations",
+			"description": "",
+			"item": [
+				{
+					"name": "simple aggregation",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\t\"query\": {\r\n        \"match_all\": {}\r\n    },\r\n    \"aggs\" : {\r\n        \"plays_by_size\" : {\r\n            \"terms\" : {\r\n            \t\"field\" : \"play_name\",\r\n            \t \"size\" : 100\r\n        \t}\r\n        }\r\n    }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "simple aggregation with filters",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=0",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"query\": {\r\n\t\t\"bool\": {\r\n\t\t\t\"should\" : [\r\n\t\t        { \"term\" : { \"play_name\" : \"Hamlet\" } },\r\n\t\t        { \"term\" : { \"play_name\" : \"Henry VIII\" } }\r\n\t\t      ]\r\n\t\t}\r\n\t},\r\n\t\r\n    \"aggs\" : {\r\n        \"PlaysBySize\" : {\r\n            \"terms\" : {\r\n            \t\"field\" : \"play_name\",\r\n            \t \"size\" : 100\r\n        \t}\r\n        }\r\n    }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "clustering ",
+					"request": {
+						"url": {
+							"raw": "http://localhost:9200/logs/_search?size=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"aggregations\" : {\r\n        \"grid\" : {\r\n            \"geohash_grid\" : {\r\n                \"field\" : \"geo.coordinates\",\r\n                \"precision\" : 2\r\n            },\r\n             \"aggs\": {\r\n\t\t        \"top_hits\": {\r\n\t\t          \"top_hits\": {\r\n\t\t            \"size\": 1\r\n\t\t          }\r\n\t\t        }\t\r\n             \t\r\n             }\r\n        \r\n        }\r\n    }\r\n}\r\n\r\n\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "aggragation on agraggated buckets",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/logs/_search?size=0",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"size\": 0,\r\n  \"aggs\": {\r\n    \"logs_over_time\": {\r\n      \"date_histogram\": {\r\n        \"field\":     \"utc_time\",\r\n        \"interval\":  \"day\"\r\n      },\r\n      \"aggs\": {\r\n\t\t\"by_user_agents\" : {\r\n            \"terms\" : {\r\n            \t\"field\" : \"agent\",\r\n            \t\"size\" : 100\r\n        \t}\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "aggragation on agraggated buckets - all bytes",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/logs/_search?size=0",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"logs",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "0",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"size\": 0,\r\n  \"aggs\": {\r\n    \"logs_over_time\": {\r\n      \"date_histogram\": {\r\n        \"field\":     \"utc_time\",\r\n        \"interval\":  \"day\"\r\n      },\r\n      \"aggs\": {\r\n        \"all_bytes\": {\r\n          \"sum\": {\r\n            \"field\": \"bytes\"\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

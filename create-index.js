@@ -25,7 +25,8 @@ const createMappings = (indexName) => {
 
     if(!fs.existsSync(mappingFile)) {
         console.log(`Mapping file does not exist ${mappingFile}`)
-        return;
+        
+        return Promise.resolve();
     }
 
     const mapping = fs.readFileSync (mappingFile);

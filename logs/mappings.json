@@ -8,7 +8,10 @@
                             "type": "geo_point"
                         }
                     }
-                }
+                },                
+				"agent": {
+					"type": "keyword"
+				}
             }
         }
     }
