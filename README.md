@@ -5,7 +5,6 @@
 
 ```
 run : docker-compose up -d
-```
 stop : docker-compose down
 ```
 
@@ -14,9 +13,7 @@ stop : docker-compose down
 
 ```
 node .\create-index.js shakespeare
-```
 node .\create-index.js logs
-```
 node .\create-index.js accounts
 ```
 
