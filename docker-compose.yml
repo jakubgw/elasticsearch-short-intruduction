@@ -13,7 +13,7 @@ services:
         hard: -1
     volumes:
       - ./esdata/first:/usr/share/elasticsearch/data
-    ports:
+    ports:    
       - 9200:9200
     networks:
       - esnet

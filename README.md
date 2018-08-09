@@ -2,13 +2,17 @@
 # Elasticsearch short introduction
 
 ## Run cluster & kibana 
-docker-compose up -d
-docker-compose down
+run : docker-compose up -d
+```
+stop : docker-compose down
 
-## Load sample data 
+## Load sample data
 node .\create-index.js shakespeare
+```
 node .\create-index.js logs
+```
 node .\create-index.js accounts
+```
 
 ## Sample calls 
 load elastic-search-introduction.postman_collection.json into postman 

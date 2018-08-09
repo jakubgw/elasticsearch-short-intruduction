@@ -275,7 +275,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"textField\" : \"This is text field\"\n}"
+							"raw": "{\n\t\"textField\" : \"This is text field\",\n\t\"numberField\": 13\n}"
 						},
 						"description": ""
 					},
@@ -306,7 +306,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"textField\" : \"This is ducment with id myID\"\n}"
+							"raw": "{\n\t\"textField\" : \"This is ducment with id myID\",\n\t\"numberField\" : 12\n}"
 						},
 						"description": ""
 					},
@@ -375,7 +375,7 @@
 				{
 					"name": "update one field",
 					"request": {
-						"url": "localhost:9200/test/type/1234/_update",
+						"url": "localhost:9200/test/type/myID/_update",
 						"method": "POST",
 						"header": [
 							{
@@ -386,7 +386,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"doc\" : {\n\t\t\"textField\" : \"This is text field 33\"\n\n\t}\n}"
+							"raw": "{\n\t\"doc\" : {\n\t\t\"textField\" : \"This is text field UPDATED\"\n\n\t}\n}"
 						},
 						"description": ""
 					},
@@ -423,7 +423,7 @@
 					"response": []
 				},
 				{
-					"name": "Search complex query ",
+					"name": "DSL query",
 					"request": {
 						"url": {
 							"raw": "localhost:9200/test/_search?size=10",
@@ -455,7 +455,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"query\": {\r\n\t\t\"bool\": {\r\n\t\t\t\"must\": [{\r\n\t\t\t\t\t\"term\": {\r\n\t\t\t\t\t\t\"textField\": \"text\"\r\n\t\t\t\t\t}\r\n\t\t\t\t}, {\r\n\t\t\t\t\t\"range\": {\r\n\t\t\t\t\t\t\"age\": {\r\n\t\t\t\t\t\t\t\"gte\": 10,\r\n\t\t\t\t\t\t\t\"lte\": 20\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t],\r\n\t\t\t\"must_not\": [\r\n\t\t        {\r\n\t\t          \"term\": {\r\n\t\t            \"age\": \"13\"\r\n\t\t          }\r\n\t\t        }\r\n\t        ], \r\n\t\t\t\"filter\": [{\r\n\t\t\t\t\"term\": {\r\n\t\t\t\t\t\"_type\": \"type\"\r\n\t\t\t\t}\r\n\t\t\t}]\r\n\t\t}\r\n\r\n\t}\r\n\r\n}\r\n"
+							"raw": "{\r\n\t\"query\": {\r\n\t\t\"bool\": {\r\n\t\t\t\"must\": [{\r\n\t\t\t\t\t\"term\": {\r\n\t\t\t\t\t\t\"textField\": \"text\"\r\n\t\t\t\t\t}\r\n\t\t\t\t}, {\r\n\t\t\t\t\t\"range\": {\r\n\t\t\t\t\t\t\"numberField\": {\r\n\t\t\t\t\t\t\t\"gte\": 10,\r\n\t\t\t\t\t\t\t\"lte\": 20\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t],\r\n\t\t\t\"must_not\": [\r\n\t\t        {\r\n\t\t          \"term\": {\r\n\t\t            \"numberField\": \"13\"\r\n\t\t          }\r\n\t\t        }\r\n\t        ], \r\n\t\t\t\"filter\": [{\r\n\t\t\t\t\"term\": {\r\n\t\t\t\t\t\"_type\": \"type\"\r\n\t\t\t\t}\r\n\t\t\t}]\r\n\t\t}\r\n\r\n\t}\r\n\r\n}\r\n"
 						},
 						"description": ""
 					},
@@ -691,6 +691,36 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Top 10 results ",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"shakespeare",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -747,7 +777,7 @@
 					"name": "simple aggregation",
 					"request": {
 						"url": {
-							"raw": "localhost:9200/shakespeare/_search?size=10",
+							"raw": "localhost:9200/shakespeare/_search?size=0",
 							"host": [
 								"localhost"
 							],
@@ -759,7 +789,7 @@
 							"query": [
 								{
 									"key": "size",
-									"value": "10",
+									"value": "0",
 									"equals": true,
 									"description": ""
 								}
@@ -934,6 +964,128 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n  \"size\": 0,\r\n  \"aggs\": {\r\n    \"logs_over_time\": {\r\n      \"date_histogram\": {\r\n        \"field\":     \"utc_time\",\r\n        \"interval\":  \"day\"\r\n      },\r\n      \"aggs\": {\r\n        \"all_bytes\": {\r\n          \"sum\": {\r\n            \"field\": \"bytes\"\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Aliases",
+			"description": "",
+			"item": [
+				{
+					"name": "Add ",
+					"request": {
+						"url": "localhost:9200/_aliases",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\" : [\r\n        { \"add\" : { \"index\" : \"logs\", \"alias\" : \"alias-name\" } }\r\n    ]\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Remove",
+					"request": {
+						"url": "localhost:9200/_aliases",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\" : [\r\n        { \"remove\" : { \"index\" : \"logs\", \"alias\" : \"alias-name\" } }\r\n    ]\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Remove copy",
+					"request": {
+						"url": "localhost:9200/_aliases",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\" : [\r\n        { \"remove\" : { \"index\" : \"logs\", \"alias\" : \"alias-name\" } },\r\n        { \"add\" : { \"index\" : \"shakespeare\", \"alias\" : \"alias-name\" } }\r\n    ]\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get by alias",
+					"request": {
+						"url": {
+							"raw": "localhost:9200/alias-name/_search?size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"alias-name",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "10",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "accounts",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:9200/accounts/_search",
+					"request": {
+						"url": "get some accounts ",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": {\n    \"bool\": {\n      \"should\": [\n        {\n         \"term\" : { \"age\": 31 }\n        },\n        {\n         \"term\" : { \"age\": 26 }\n        }\n      ]\n    }\n  }\n}"
 						},
 						"description": ""
 					},
