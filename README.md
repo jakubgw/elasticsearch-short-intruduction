@@ -2,11 +2,17 @@
 # Elasticsearch short introduction
 
 ## Run cluster & kibana 
+
+```
 run : docker-compose up -d
 ```
 stop : docker-compose down
+```
 
 ## Load sample data
+
+
+```
 node .\create-index.js shakespeare
 ```
 node .\create-index.js logs
